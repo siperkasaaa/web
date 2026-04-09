@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seed Firestore - Personel OW 2026</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 24px; background: #0b1320; color: #e5eef9; }
+      .card { max-width: 760px; padding: 18px; border: 1px solid #35507a; border-radius: 12px; background: #101c2e; }
+      button { padding: 10px 16px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; background: #2d7df6; color: white; }
+      code { background: #1a2b44; padding: 2px 6px; border-radius: 6px; }
+      #log { margin-top: 14px; white-space: pre-wrap; line-height: 1.45; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>Upload Data Personel OW 2026 ke Firestore</h2>
+      <p>Koleksi target: <code>personel_overweight_2026</code></p>
+      <p>Pastikan <code>firebase-config.js</code> sudah diisi dulu.</p>
+      <button id="seedButton">Upload Sekarang</button>
+      <div id="log"></div>
+    </div>
+
+    <script src="./firebase-config.js"></script>
+    <script type="module" src="./seed-firestore.js"></script>
+  </body>
+</html>
