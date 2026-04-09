@@ -2,7 +2,6 @@ name: Deploy static dashboard to GitHub Pages
 
 on:
   push:
-    branches: ["main", "master"]
   workflow_dispatch:
 
 permissions:
@@ -16,6 +15,8 @@ concurrency:
 
 jobs:
   deploy:
+    # Hindari deploy dari branch dependabot/renovate, sisanya boleh.
+    if: ${{ !startsWith(github.ref_name, 'dependabot/') && !startsWith(github.ref_name, 'renovate/') }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
