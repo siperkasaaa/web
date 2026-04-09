@@ -1,61 +1,96 @@
-const data = {
-  title: "OVERWEIGHT MONITORING DASHBOARD",
-  unitName: "SIPERKASA BRIMOB",
-  summary: [
-    { label: "Total Personel", value: 200 },
-    { label: "Postur Ideal", value: 120, percent: "60%" },
-    { label: "Overweight", value: 60, percent: "30%", highlight: "danger" },
-    { label: "Obesitas", value: 20, percent: "10%", highlight: "danger" },
-  ],
-  personelRows: [
-    { nama: "Bripka A", nrp: "870123", pangkat: "Bripka", kompi: "Kompi 1", usia: 32 },
-    { nama: "Brigpol B", nrp: "854567", pangkat: "Brigpol", kompi: "Kompi 2", usia: 30 },
-    { nama: "Briptu C", nrp: "899001", pangkat: "Briptu", kompi: "Kompi 3", usia: 29 },
-  ],
-  kondisi: [
-    ["Tinggi", "170 cm"],
-    ["Berat", "85 kg"],
-    ["BMI", "29.4"],
-    ["Lingkar Perut", "96 cm"],
-    ["Status", "OVERWEIGHT"],
-  ],
-  disiplin: [
-    { name: "Kehadiran", value: 85, label: "85%" },
-    { name: "Lari", value: 76, label: "Baik" },
-    { name: "Push-Up", value: 64, label: "Cukup" },
-    { name: "Sit-Up", value: 74, label: "Baik" },
-  ],
-  nilai: [
-    ["Lari 12 Menit", "2100 M"],
-    ["Push-Up", "35"],
-    ["Sit-Up", "38"],
-    ["Nilai Akhir", "74"],
-  ],
-  progress: [
-    ["Berat Awal", "88 kg"],
-    ["Berat Sekarang", "85 kg"],
-    ["Target", "75 kg"],
-    ["Total Penurunan", "-3 kg"],
-  ],
-};
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import { collection, getDocs, getFirestore, orderBy, query } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+import { LOCAL_FALLBACK_ROWS, PERSONEL_COLUMNS, PERSONEL_FIELD_KEYS } from "./personel-data.js";
+bootstrap();
 
-renderDashboard(data);
+async function bootstrap() {
+  const rows = await loadRowsFromFirestore();
+  const personelRows = rows.length ? rows : LOCAL_FALLBACK_ROWS;
 
-function renderDashboard(model) {
+  const data = {
+    title: "DAFTAR PERSONEL OVERWEIGHT (OW) BATALYON C PELOPOR TAHUN 2026",
+    unitName: rows.length ? "BATALYON C PELOPOR (FIREBASE)" : "BATALYON C PELOPOR (LOCAL FALLBACK)",
+    kondisi: [
+      ["Total Data Ditampilkan", `${personelRows.length} personel`],
+      ["Mode Tabel", "Scrollable"],
+      ["Maksimum Kolom", "50 kolom"],
+      ["Sumber", rows.length ? "Cloud Firestore" : "Local fallback"],
+      ["Status", "AKTIF"],
+    ],
+  };
+
+  renderDashboard(data, personelRows);
+}
+
+async function loadRowsFromFirestore() {
+  try {
+    if (!window.FIREBASE_CONFIG || !window.FIREBASE_CONFIG.apiKey) {
+      console.warn("FIREBASE_CONFIG belum diisi. Menggunakan local fallback.");
+      return [];
+    }
+
+    const app = initializeApp(window.FIREBASE_CONFIG);
+    const db = getFirestore(app);
+    const q = query(collection(db, "personel_overweight_2026"), orderBy("no"));
+    const snapshot = await getDocs(q);
+
+    return snapshot.docs.map((doc) => mapFirestoreDocToRow(doc.data()));
+  } catch (error) {
+    console.error("Gagal ambil data Firestore:", error);
+    return [];
+  }
+}
+
+function mapFirestoreDocToRow(doc) {
+  return PERSONEL_FIELD_KEYS.map((key) => (doc[key] ?? "-"));
+}
+
+function renderDashboard(model, personelRows) {
   document.getElementById("dashboardTitle").textContent = model.title;
   document.getElementById("unitName").textContent = model.unitName;
 
-  renderSummary(model.summary);
-  renderPersonel(model.personelRows);
+  renderSummary(personelRows);
+  renderPersonelTable(PERSONEL_COLUMNS, personelRows);
   renderKondisi(model.kondisi);
-  renderDiscipline(model.disiplin);
-  renderList("nilaiList", model.nilai);
-  renderList("progressList", model.progress);
+  renderDiscipline([
+    { name: "Kehadiran Data", value: 100, label: "Lengkap" },
+    { name: "Tampilan Tabel", value: 95, label: "Gulir Aktif" },
+    { name: "Filter Manual", value: 70, label: "Siap tambah" },
+    { name: "Akses Mobile", value: 80, label: "Responsif" },
+  ]);
 
-  setupCharts();
+  const owCount = personelRows.filter((r) => String(r[30]).toUpperCase() === "OW").length;
+  const obCount = personelRows.filter((r) => String(r[30]).toUpperCase() === "OB").length;
+
+  renderList("nilaiList", [
+    ["Total Record", personelRows.length],
+    ["Jumlah OW", owCount],
+    ["Jumlah OB", obCount],
+    ["Maks. Kolom Render", Math.min(50, PERSONEL_COLUMNS.length)],
+  ]);
+
+  renderList("progressList", [
+    ["Data Masuk", `${personelRows.length} personel`],
+    ["Kolom Aktif", `${Math.min(50, PERSONEL_COLUMNS.length)} kolom`],
+    ["Kolom Tersedia", `${PERSONEL_COLUMNS.length} kolom`],
+    ["Mode", "Horizontal & Vertical Scroll"],
+  ]);
+
+  setupCharts(owCount, obCount, personelRows.length);
 }
 
-function renderSummary(items) {
+function renderSummary(rows) {
+  const total = rows.length || 1;
+  const ow = rows.filter((r) => String(r[30]).toUpperCase() === "OW").length;
+  const ob = rows.filter((r) => String(r[30]).toUpperCase() === "OB").length;
+
+  const items = [
+    { label: "Total Personel", value: rows.length },
+    { label: "Overweight", value: ow, percent: `${((ow / total) * 100).toFixed(1)}%` },
+    { label: "Obesitas", value: ob, percent: `${((ob / total) * 100).toFixed(1)}%`, highlight: "danger" },
+    { label: "Kolom Aktif", value: Math.min(50, PERSONEL_COLUMNS.length), percent: `${PERSONEL_COLUMNS.length} total` },
+  ];
+
   const wrap = document.getElementById("summaryRow");
   wrap.innerHTML = items
     .map(
@@ -72,21 +107,16 @@ function renderSummary(items) {
     .join("");
 }
 
-function renderPersonel(rows) {
+function renderPersonelTable(columns, rows) {
+  const maxColumns = 50;
+  const activeColumns = columns.slice(0, maxColumns);
+
+  const head = document.getElementById("personelHead");
+  head.innerHTML = `<tr>${activeColumns.map((col) => `<th>${col}</th>`).join("")}</tr>`;
+
   const tbody = document.getElementById("personelRows");
   tbody.innerHTML = rows
-    .map(
-      (row, index) => `
-      <tr>
-        <td>${index + 1}</td>
-        <td>${row.nama}</td>
-        <td>${row.nrp}</td>
-        <td>${row.pangkat}</td>
-        <td>${row.kompi}</td>
-        <td>${row.usia}</td>
-      </tr>
-    `,
-    )
+    .map((row) => `<tr>${row.slice(0, maxColumns).map((cell) => `<td>${cell}</td>`).join("")}</tr>`)
     .join("");
 }
 
@@ -123,26 +153,15 @@ function renderDiscipline(items) {
 
 function renderList(targetId, items) {
   const wrap = document.getElementById(targetId);
-  wrap.innerHTML = items
-    .map(([key, value]) => `<li><span>${key}</span><strong>${value}</strong></li>`)
-    .join("");
+  wrap.innerHTML = items.map(([key, value]) => `<li><span>${key}</span><strong>${value}</strong></li>`).join("");
 }
 
-function setupCharts() {
+function setupCharts(owCount, obCount, total) {
   new Chart(document.getElementById("lineChartMain"), {
     type: "line",
     data: {
-      labels: ["Jan", "Feb", "Mar", "Apr", "Mei"],
-      datasets: [
-        {
-          data: [56, 53, 50, 47, 45],
-          borderColor: "#ff6a5c",
-          backgroundColor: "rgba(255, 106, 92, 0.2)",
-          pointRadius: 4,
-          tension: 0.35,
-          fill: true,
-        },
-      ],
+      labels: ["Total", "OW", "OB"],
+      datasets: [{ data: [total, owCount, obCount], borderColor: "#ff6a5c", backgroundColor: "rgba(255, 106, 92, 0.2)", pointRadius: 4, tension: 0.35, fill: true }],
     },
     options: chartOptions(),
   });
@@ -150,17 +169,8 @@ function setupCharts() {
   new Chart(document.getElementById("lineChartSmall"), {
     type: "line",
     data: {
-      labels: ["Jan", "Feb", "Mar", "Apr", "Mei"],
-      datasets: [
-        {
-          data: [57, 55, 52, 50, 47],
-          borderColor: "#ff6a5c",
-          backgroundColor: "rgba(255, 106, 92, 0.15)",
-          pointRadius: 3,
-          tension: 0.3,
-          fill: true,
-        },
-      ],
+      labels: ["OW", "OB"],
+      datasets: [{ data: [owCount, obCount], borderColor: "#ff6a5c", backgroundColor: "rgba(255, 106, 92, 0.15)", pointRadius: 3, tension: 0.3, fill: true }],
     },
     options: chartOptions(),
   });
@@ -168,40 +178,19 @@ function setupCharts() {
   new Chart(document.getElementById("barChart"), {
     type: "bar",
     data: {
-      labels: ["Jan", "Feb", "Mar", "Apr", "Mei"],
-      datasets: [
-        {
-          data: [-1, -1.5, -2.3, -3.1, -4],
-          backgroundColor: "#9de46a",
-          borderRadius: 4,
-        },
-      ],
+      labels: ["OW", "OB"],
+      datasets: [{ data: [owCount, obCount], backgroundColor: "#9de46a", borderRadius: 4 }],
     },
-    options: {
-      ...chartOptions(),
-      plugins: { legend: { display: false } },
-    },
+    options: { ...chartOptions(), plugins: { legend: { display: false } } },
   });
 
   new Chart(document.getElementById("pieChart"), {
     type: "pie",
     data: {
-      labels: ["Tercapai", "Berjalan", "Belum"],
-      datasets: [
-        {
-          data: [60, 30, 10],
-          backgroundColor: ["#3f91ff", "#ff4d4d", "#9ade5d"],
-          borderColor: "#0d1d2f",
-        },
-      ],
+      labels: ["OW", "OB"],
+      datasets: [{ data: [owCount, obCount], backgroundColor: ["#3f91ff", "#ff4d4d"], borderColor: "#0d1d2f" }],
     },
-    options: {
-      plugins: {
-        legend: {
-          labels: { color: "#d9edff" },
-        },
-      },
-    },
+    options: { plugins: { legend: { labels: { color: "#d9edff" } } } },
   });
 }
 
@@ -210,17 +199,9 @@ function chartOptions() {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
-      x: {
-        ticks: { color: "#bad1e6" },
-        grid: { color: "rgba(255,255,255,0.06)" },
-      },
-      y: {
-        ticks: { color: "#bad1e6" },
-        grid: { color: "rgba(255,255,255,0.06)" },
-      },
+      x: { ticks: { color: "#bad1e6" }, grid: { color: "rgba(255,255,255,0.06)" } },
+      y: { ticks: { color: "#bad1e6" }, grid: { color: "rgba(255,255,255,0.06)" } },
     },
-    plugins: {
-      legend: { display: false },
-    },
+    plugins: { legend: { display: false } },
   };
 }
