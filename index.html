@@ -28,17 +28,8 @@
         <section class="panel card" id="personelPanel">
           <div class="card-title">Data Personel Overweight</div>
           <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Nama</th>
-                  <th>NRP</th>
-                  <th>Pangkat</th>
-                  <th>Kompi</th>
-                  <th>Usia</th>
-                </tr>
-              </thead>
+            <table id="personelTable">
+              <thead id="personelHead"></thead>
               <tbody id="personelRows"></tbody>
             </table>
           </div>
@@ -46,12 +37,8 @@
 
         <section class="panel card" id="kondisiPanel">
           <div class="card-title">Kondisi Fisik</div>
-          <div class="kondisi-grid">
+          <div class="kondisi-grid single-column">
             <div class="stats" id="kondisiStats"></div>
-            <div class="avatar-wrap">
-              <div class="avatar"></div>
-              <p class="avatar-label">Foto Profil</p>
-            </div>
           </div>
           <canvas id="lineChartMain" height="230"></canvas>
         </section>
@@ -89,6 +76,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
-    <script src="./app.js"></script>
+    <script src="./firebase-config.js"></script>
+    <script type="module" src="./app.js"></script>
   </body>
 </html>
