@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Template Dashboard Monitoring</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <header class="dashboard-header panel">
+        <div class="title-group">
+          <span class="badge">Template</span>
+          <h1 id="dashboardTitle">OVERWEIGHT MONITORING DASHBOARD</h1>
+        </div>
+        <div class="unit-name" id="unitName">SIPERKASA BRIMOB</div>
+      </header>
+
+      <section class="summary-row" id="summaryRow"></section>
+
+      <main class="grid-layout">
+        <section class="panel card" id="personelPanel">
+          <div class="card-title">Data Personel Overweight</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama</th>
+                  <th>NRP</th>
+                  <th>Pangkat</th>
+                  <th>Kompi</th>
+                  <th>Usia</th>
+                </tr>
+              </thead>
+              <tbody id="personelRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel card" id="kondisiPanel">
+          <div class="card-title">Kondisi Fisik</div>
+          <div class="kondisi-grid">
+            <div class="stats" id="kondisiStats"></div>
+            <div class="avatar-wrap">
+              <div class="avatar"></div>
+              <p class="avatar-label">Foto Profil</p>
+            </div>
+          </div>
+          <canvas id="lineChartMain" height="230"></canvas>
+        </section>
+
+        <aside class="right-column">
+          <section class="panel card">
+            <div class="card-title">Disiplin Latihan</div>
+            <div id="disciplineList"></div>
+          </section>
+
+          <section class="panel card">
+            <div class="card-title">Nilai Kesamaptaan</div>
+            <ul id="nilaiList" class="key-value-list"></ul>
+          </section>
+
+          <section class="panel card">
+            <div class="card-title">Tren Bulanan</div>
+            <canvas id="barChart" height="170"></canvas>
+          </section>
+        </aside>
+
+        <section class="panel card" id="progressPanel">
+          <div class="card-title">Progres Penurunan Berat Badan</div>
+          <div class="progress-grid">
+            <ul id="progressList" class="key-value-list"></ul>
+            <canvas id="pieChart" height="190"></canvas>
+          </div>
+        </section>
+
+        <section class="panel card" id="chartSmallPanel">
+          <div class="card-title">Grafik Personel Overweight</div>
+          <canvas id="lineChartSmall" height="170"></canvas>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
