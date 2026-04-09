@@ -1,6 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { collection, getDocs, getFirestore, orderBy, query } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 import { LOCAL_FALLBACK_ROWS, PERSONEL_COLUMNS, PERSONEL_FIELD_KEYS } from "./personel-data.js";
+
+const HIDDEN_COLUMN_INDEXES = new Set([1]); // SUB NO disembunyikan dari tampilan
 bootstrap();
 
 async function bootstrap() {
@@ -66,13 +68,13 @@ function renderDashboard(model, personelRows) {
     ["Total Record", personelRows.length],
     ["Jumlah OW", owCount],
     ["Jumlah OB", obCount],
-    ["Maks. Kolom Render", Math.min(50, PERSONEL_COLUMNS.length)],
+    ["Maks. Kolom Render", Math.min(50, getVisibleColumnCount())],
   ]);
 
   renderList("progressList", [
     ["Data Masuk", `${personelRows.length} personel`],
-    ["Kolom Aktif", `${Math.min(50, PERSONEL_COLUMNS.length)} kolom`],
-    ["Kolom Tersedia", `${PERSONEL_COLUMNS.length} kolom`],
+    ["Kolom Aktif", `${Math.min(50, getVisibleColumnCount())} kolom`],
+    ["Kolom Tersedia", `${getVisibleColumnCount()} kolom`],
     ["Mode", "Horizontal & Vertical Scroll"],
   ]);
 
@@ -88,7 +90,7 @@ function renderSummary(rows) {
     { label: "Total Personel", value: rows.length },
     { label: "Overweight", value: ow, percent: `${((ow / total) * 100).toFixed(1)}%` },
     { label: "Obesitas", value: ob, percent: `${((ob / total) * 100).toFixed(1)}%`, highlight: "danger" },
-    { label: "Kolom Aktif", value: Math.min(50, PERSONEL_COLUMNS.length), percent: `${PERSONEL_COLUMNS.length} total` },
+    { label: "Kolom Aktif", value: Math.min(50, getVisibleColumnCount()), percent: `${getVisibleColumnCount()} total` },
   ];
 
   const wrap = document.getElementById("summaryRow");
@@ -109,15 +111,27 @@ function renderSummary(rows) {
 
 function renderPersonelTable(columns, rows) {
   const maxColumns = 50;
-  const activeColumns = columns.slice(0, maxColumns);
+  const visibleColumnIndexes = columns
+    .map((_, index) => index)
+    .filter((index) => !HIDDEN_COLUMN_INDEXES.has(index))
+    .slice(0, maxColumns);
 
   const head = document.getElementById("personelHead");
-  head.innerHTML = `<tr>${activeColumns.map((col) => `<th>${col}</th>`).join("")}</tr>`;
+  head.innerHTML = `<tr>${visibleColumnIndexes.map((index) => `<th>${columns[index]}</th>`).join("")}</tr>`;
 
   const tbody = document.getElementById("personelRows");
   tbody.innerHTML = rows
-    .map((row) => `<tr>${row.slice(0, maxColumns).map((cell) => `<td>${cell}</td>`).join("")}</tr>`)
+    .map(
+      (row) =>
+        `<tr>${visibleColumnIndexes
+          .map((index) => `<td>${row[index] ?? "-"}</td>`)
+          .join("")}</tr>`,
+    )
     .join("");
+}
+
+function getVisibleColumnCount() {
+  return PERSONEL_COLUMNS.filter((_, index) => !HIDDEN_COLUMN_INDEXES.has(index)).length;
 }
 
 function renderKondisi(items) {
