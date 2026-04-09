@@ -163,7 +163,8 @@ h1 {
 }
 
 .table-wrap {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: 520px;
 }
 
 table {
@@ -190,6 +191,10 @@ th {
   align-items: center;
 }
 
+.kondisi-grid.single-column {
+  grid-template-columns: 1fr;
+}
+
 .stats {
   display: grid;
   gap: 7px;
@@ -214,26 +219,6 @@ th {
 
 .stat-item.status .value {
   color: #ff7b7b;
-}
-
-.avatar-wrap {
-  text-align: center;
-}
-
-.avatar {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  border: 1px solid #264d73;
-  border-radius: 10px;
-  background:
-    radial-gradient(circle at top, #304a62, #121f2d),
-    url("https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80") center/cover;
-  background-blend-mode: soft-light;
-}
-
-.avatar-label {
-  margin: 6px 0 0;
-  color: #9bb4ca;
 }
 
 .progress-grid {
@@ -300,4 +285,16 @@ th {
   .summary-row {
     grid-template-columns: repeat(2, minmax(120px, 1fr));
   }
+}
+
+#personelTable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+#personelTable th,
+#personelTable td {
+  white-space: nowrap;
+  font-size: 0.82rem;
 }
