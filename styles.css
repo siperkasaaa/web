@@ -219,13 +219,9 @@ h1 {
 }
 
 .overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(1, 5, 10, 0.74);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
+  position: static;
+  background: transparent;
+  margin-top: 10px;
 }
 
 .overlay.hidden {
@@ -233,8 +229,8 @@ h1 {
 }
 
 .overlay-card {
-  width: min(680px, 92vw);
-  max-height: 88vh;
+  width: 100%;
+  max-height: none;
   overflow: auto;
   background: #0d1f33;
   border: 1px solid #36618e;
@@ -243,7 +239,7 @@ h1 {
 }
 
 .overlay-card.large {
-  width: min(1120px, 96vw);
+  width: 100%;
 }
 
 .overlay-card input,
