@@ -10,7 +10,7 @@ async function bootstrap() {
   const personelRows = rows.length ? rows : LOCAL_FALLBACK_ROWS;
 
   const data = {
-    title: "DAFTAR PERSONEL OVERWEIGHT (OW) BATALYON C PELOPOR TAHUN 2026",
+    title: "SIPERKASA",
     unitName: rows.length ? "BATALYON C PELOPOR (FIREBASE)" : "BATALYON C PELOPOR (LOCAL FALLBACK)",
     kondisi: [
       ["Total Data Ditampilkan", `${personelRows.length} personel`],
