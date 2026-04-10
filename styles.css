@@ -188,6 +188,97 @@ h1 {
   max-height: 340px;
 }
 
+.table-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.table-actions input {
+  flex: 1;
+  min-width: 180px;
+  background: #0f2945;
+  color: #dcefff;
+  border: 1px solid #2f5f8d;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.table-actions button {
+  border: 1px solid #3a6ea1;
+  background: #17375a;
+  color: #e5f2ff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.table-actions .admin-button {
+  background: #4a1f2f;
+  border-color: #944863;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(1, 5, 10, 0.74);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.overlay-card {
+  width: min(680px, 92vw);
+  max-height: 88vh;
+  overflow: auto;
+  background: #0d1f33;
+  border: 1px solid #36618e;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.overlay-card.large {
+  width: min(1120px, 96vw);
+}
+
+.overlay-card input,
+.overlay-card select {
+  width: 100%;
+  margin: 6px 0 10px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #2d5680;
+  background: #132942;
+  color: #eef7ff;
+}
+
+.overlay-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.admin-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.admin-form label {
+  display: grid;
+  font-size: 0.8rem;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
