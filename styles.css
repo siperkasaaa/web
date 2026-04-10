@@ -55,21 +55,26 @@ body {
 .title-group {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .header-logo {
-  width: 15px;
-  height: 15px;
+  width: 42px;
+  height: 42px;
   object-fit: contain;
   border-radius: 50%;
   border: 1px solid #3e6d9d;
   background: #0c1b2e;
   padding: 3px;
+  display: block;
+  flex-shrink: 0;
 }
 
 h1 {
   margin: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
   letter-spacing: 0.08em;
   font-size: clamp(1rem, 2.2vw, 2.1rem);
 }
