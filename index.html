@@ -27,6 +27,11 @@
       <main class="grid-layout">
         <section class="panel card" id="personelPanel">
           <div class="card-title">Data Personel Overweight</div>
+          <div class="table-actions">
+            <input id="searchNameInput" type="text" placeholder="Cari nama personel..." />
+            <button id="searchNameButton" type="button">Cari</button>
+            <button id="openAdminButton" type="button" class="admin-button">Fitur Admin</button>
+          </div>
           <div class="table-wrap">
             <table id="personelTable">
               <thead id="personelHead"></thead>
@@ -73,6 +78,45 @@
           <canvas id="lineChartSmall" height="170"></canvas>
         </section>
       </main>
+    </div>
+
+    <div id="overlaySearchResult" class="overlay hidden">
+      <div class="overlay-card">
+        <h3>Detail Personel</h3>
+        <div id="searchResultContent"></div>
+        <button type="button" data-close="overlaySearchResult">Tutup</button>
+      </div>
+    </div>
+
+    <div id="overlayAdminLogin" class="overlay hidden">
+      <div class="overlay-card">
+        <h3>Masuk Fitur Admin</h3>
+        <input id="adminKeywordInput" type="password" placeholder="Masukkan kata kunci admin" />
+        <div class="overlay-actions">
+          <button id="adminLoginSubmit" type="button">Masuk</button>
+          <button type="button" data-close="overlayAdminLogin">Batal</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="overlayAdminPanel" class="overlay hidden">
+      <div class="overlay-card large">
+        <h3>Admin Personel</h3>
+        <div class="admin-grid">
+          <section>
+            <h4>Tambah Personel Baru</h4>
+            <form id="adminAddForm" class="admin-form"></form>
+            <button id="adminAddSubmit" type="button">Simpan Personel Baru</button>
+          </section>
+          <section>
+            <h4>Edit Personel</h4>
+            <select id="adminEditSelect"></select>
+            <form id="adminEditForm" class="admin-form"></form>
+            <button id="adminEditSubmit" type="button">Simpan Perubahan</button>
+          </section>
+        </div>
+        <button type="button" data-close="overlayAdminPanel">Tutup</button>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
