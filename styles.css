@@ -59,8 +59,8 @@ body {
 }
 
 .header-logo {
-  width: 56px;
-  height: 56px;
+  width: 74px;
+  height: 74px;
   object-fit: contain;
   display: block;
   flex-shrink: 0;
