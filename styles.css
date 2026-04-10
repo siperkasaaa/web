@@ -50,20 +50,30 @@ body {
   padding: 14px 18px;
   border-top: 4px solid #3a5f8c;
   border-bottom: 2px solid #203f5f;
+  overflow: visible;
 }
 
 .title-group {
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
+  padding-left: 72px;
 }
 
 .header-logo {
   width: 74px;
   height: 74px;
   object-fit: contain;
-  display: block;
-  flex-shrink: 0;
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
 }
 
 h1 {
