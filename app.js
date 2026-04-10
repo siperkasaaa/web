@@ -3,6 +3,36 @@ import { collection, getDocs, getFirestore, orderBy, query } from "https://www.g
 import { LOCAL_FALLBACK_ROWS, PERSONEL_COLUMNS, PERSONEL_FIELD_KEYS } from "./personel-data.js";
 
 const HIDDEN_COLUMN_INDEXES = new Set([1]); // SUB NO disembunyikan dari tampilan
+const ADMIN_KEYWORD = "adminperkasa";
+const NUMERIC_FIELDS = new Set([
+  "no",
+  "sub_no",
+  "umur",
+  "tinggi_badan",
+  "berat_badan",
+  "lingkar_perut",
+  "gol",
+  "putaran_1x400m",
+  "kelebihan",
+  "lari_12m_hasil",
+  "lari_12m_nilai",
+  "pull_up_hasil",
+  "pull_up_nilai",
+  "sit_up_hasil",
+  "sit_up_nilai",
+  "push_up_hasil",
+  "push_up_nilai",
+  "shuttle_run_hasil",
+  "shuttle_run_nilai",
+  "nilai_samapta_b",
+  "nilai_kesjas_akhir",
+  "imt",
+]);
+
+const state = {
+  personelRows: [],
+  initialized: false,
+};
 bootstrap();
 
 async function bootstrap() {
@@ -21,7 +51,9 @@ async function bootstrap() {
     ],
   };
 
-  renderDashboard(data, personelRows);
+  state.personelRows = personelRows.map((row) => [...row]);
+  renderDashboard(data, state.personelRows);
+  initOverlayFeatures();
 }
 
 async function loadRowsFromFirestore() {
@@ -218,4 +250,154 @@ function chartOptions() {
     },
     plugins: { legend: { display: false } },
   };
+}
+
+function initOverlayFeatures() {
+  if (state.initialized) return;
+  state.initialized = true;
+
+  document.getElementById("searchNameButton").addEventListener("click", openSearchOverlay);
+  document.getElementById("openAdminButton").addEventListener("click", () => showOverlay("overlayAdminLogin"));
+  document.getElementById("adminLoginSubmit").addEventListener("click", handleAdminLogin);
+  document.getElementById("adminAddSubmit").addEventListener("click", handleAddPersonel);
+  document.getElementById("adminEditSubmit").addEventListener("click", handleEditPersonel);
+  document.getElementById("adminEditSelect").addEventListener("change", populateEditForm);
+
+  document.querySelectorAll("[data-close]").forEach((button) => {
+    button.addEventListener("click", () => hideOverlay(button.dataset.close));
+  });
+
+  buildForm("adminAddForm");
+  buildForm("adminEditForm");
+  refreshEditSelect();
+}
+
+function showOverlay(id) {
+  document.getElementById(id).classList.remove("hidden");
+}
+
+function hideOverlay(id) {
+  document.getElementById(id).classList.add("hidden");
+}
+
+function openSearchOverlay() {
+  const keyword = document.getElementById("searchNameInput").value.trim().toLowerCase();
+  if (!keyword) return;
+
+  const row = state.personelRows.find((personel) => String(personel[2]).toLowerCase().includes(keyword));
+  const content = document.getElementById("searchResultContent");
+
+  if (!row) {
+    content.innerHTML = "<p>Data personel tidak ditemukan.</p>";
+    showOverlay("overlaySearchResult");
+    return;
+  }
+
+  content.innerHTML = PERSONEL_COLUMNS.map((label, index) => `<div><strong>${label}:</strong> ${row[index] ?? "-"}</div>`).join("");
+  showOverlay("overlaySearchResult");
+}
+
+function handleAdminLogin() {
+  const value = document.getElementById("adminKeywordInput").value;
+  if (value !== ADMIN_KEYWORD) {
+    alert("Kata kunci admin salah.");
+    return;
+  }
+
+  hideOverlay("overlayAdminLogin");
+  showOverlay("overlayAdminPanel");
+}
+
+function buildForm(formId) {
+  const form = document.getElementById(formId);
+  form.innerHTML = PERSONEL_FIELD_KEYS.map((key, index) => {
+    const type = NUMERIC_FIELDS.has(key) ? "number" : "text";
+    return `<label>${PERSONEL_COLUMNS[index]}<input name="${key}" type="${type}" required /></label>`;
+  }).join("");
+}
+
+function handleAddPersonel() {
+  const form = document.getElementById("adminAddForm");
+  const row = getRowFromForm(form);
+  if (!row) return;
+
+  state.personelRows.push(row);
+  sortRowsByNo();
+  refreshAfterMutation();
+  form.reset();
+  alert("Personel baru berhasil ditambahkan.");
+}
+
+function handleEditPersonel() {
+  const select = document.getElementById("adminEditSelect");
+  const selectedNo = Number(select.value);
+  const index = state.personelRows.findIndex((row) => Number(row[0]) === selectedNo);
+  if (index === -1) return;
+
+  const row = getRowFromForm(document.getElementById("adminEditForm"));
+  if (!row) return;
+  state.personelRows[index] = row;
+  sortRowsByNo();
+  refreshAfterMutation();
+  select.value = String(row[0]);
+  populateEditForm();
+  alert("Data personel berhasil diperbarui.");
+}
+
+function getRowFromForm(form) {
+  const row = [];
+  for (const key of PERSONEL_FIELD_KEYS) {
+    const input = form.querySelector(`[name="${key}"]`);
+    const raw = input.value.trim();
+    if (!raw) {
+      alert("Semua field wajib diisi.");
+      return null;
+    }
+
+    row.push(NUMERIC_FIELDS.has(key) ? Number(raw) : raw);
+  }
+  return row;
+}
+
+function refreshEditSelect() {
+  const select = document.getElementById("adminEditSelect");
+  select.innerHTML = state.personelRows
+    .map((row) => `<option value="${row[0]}">${row[0]} - ${row[2]}</option>`)
+    .join("");
+  populateEditForm();
+}
+
+function populateEditForm() {
+  const select = document.getElementById("adminEditSelect");
+  const no = Number(select.value);
+  const row = state.personelRows.find((item) => Number(item[0]) === no);
+  if (!row) return;
+
+  const form = document.getElementById("adminEditForm");
+  PERSONEL_FIELD_KEYS.forEach((key, index) => {
+    const input = form.querySelector(`[name="${key}"]`);
+    input.value = row[index] ?? "";
+  });
+}
+
+function sortRowsByNo() {
+  state.personelRows.sort((a, b) => Number(a[0]) - Number(b[0]));
+}
+
+function refreshAfterMutation() {
+  renderDashboard(
+    {
+      title: "SIPERKASA",
+      unitName: "BATALYON C PELOPOR (ADMIN UPDATE)",
+      kondisi: [
+        ["Total Data Ditampilkan", `${state.personelRows.length} personel`],
+        ["Mode Tabel", "Scrollable"],
+        ["Maksimum Kolom", "50 kolom"],
+        ["Sumber", "Cloud Firestore / Local"],
+        ["Status", "AKTIF"],
+      ],
+    },
+    state.personelRows,
+  );
+  refreshEditSelect();
 }
