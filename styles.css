@@ -59,13 +59,9 @@ body {
 }
 
 .header-logo {
-  width: 42px;
-  height: 42px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
-  border-radius: 50%;
-  border: 1px solid #3e6d9d;
-  background: #0c1b2e;
-  padding: 3px;
   display: block;
   flex-shrink: 0;
 }
