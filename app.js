@@ -257,7 +257,16 @@ function initOverlayFeatures() {
   state.initialized = true;
 
   document.getElementById("searchNameButton").addEventListener("click", openSearchOverlay);
-  document.getElementById("openAdminButton").addEventListener("click", () => showOverlay("overlayAdminLogin"));
+  document.getElementById("searchNameInput").addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      openSearchOverlay();
+    }
+  });
+  document.getElementById("openAdminButton").addEventListener("click", () => {
+    document.getElementById("overlayAdminLogin").scrollIntoView({ behavior: "smooth", block: "center" });
+    document.getElementById("adminKeywordInput").focus();
+  });
   document.getElementById("adminLoginSubmit").addEventListener("click", handleAdminLogin);
   document.getElementById("adminAddSubmit").addEventListener("click", handleAddPersonel);
   document.getElementById("adminEditSubmit").addEventListener("click", handleEditPersonel);
@@ -304,7 +313,6 @@ function handleAdminLogin() {
     return;
   }
 
-  hideOverlay("overlayAdminLogin");
   showOverlay("overlayAdminPanel");
 }
 
