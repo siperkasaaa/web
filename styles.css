@@ -138,11 +138,11 @@ h1 {
 
 .grid-layout {
   display: grid;
-  grid-template-columns: 1.2fr 1.35fr 0.95fr;
+  grid-template-columns: 1.15fr 1fr;
   grid-template-areas:
-    "personel kondisi right"
-    "progress kondisi right"
-    "chartsmall kondisi right";
+    "personel kondisi"
+    "right kondisi"
+    "progress chartsmall";
   gap: 12px;
   align-items: start;
 }
@@ -165,9 +165,13 @@ h1 {
 
 .right-column {
   grid-area: right;
-  display: grid;
-  gap: 12px;
-  grid-template-rows: auto auto 1fr;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.right-column .card {
+  margin: 0;
 }
 
 .card {
@@ -186,7 +190,9 @@ h1 {
 
 .table-wrap {
   overflow: auto;
-  max-height: 340px;
+  max-height: 285px;
+  border: 1px solid #1f3e5f;
+  border-radius: 8px;
 }
 
 .table-actions {
@@ -423,5 +429,6 @@ canvas {
 #personelTable th,
 #personelTable td {
   white-space: nowrap;
-  font-size: 0.82rem;
+  font-size: 0.74rem;
+  padding: 5px 6px;
 }
